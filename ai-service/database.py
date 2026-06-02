@@ -1,13 +1,21 @@
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from models import Base
 
-DATABASE_URL = (
-    "postgresql://postgres:Praneeth85@localhost:5432/supportdb"
-)
+load_dotenv()
 
-engine = create_engine(DATABASE_URL)
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True
+)
 
 SessionLocal = sessionmaker(
     autocommit=False,
@@ -15,5 +23,4 @@ SessionLocal = sessionmaker(
     bind=engine
 )
 
-# Create all tables
 Base.metadata.create_all(bind=engine)
