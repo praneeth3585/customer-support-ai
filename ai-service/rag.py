@@ -11,9 +11,16 @@ from ticket_service import (
 
 load_dotenv()
 
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
+if not GOOGLE_API_KEY:
+    raise ValueError(
+        "GOOGLE_API_KEY is not set in environment variables"
+    )
+
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
-    google_api_key=os.getenv("GOOGLE_API_KEY")
+    google_api_key=GOOGLE_API_KEY
 )
 
 
@@ -56,8 +63,7 @@ Rules:
 
 1. Answer ONLY using the provided context.
 2. Do not make up information.
-3. If the answer cannot be found in the context,
-respond exactly:
+3. If the answer cannot be found in the context, respond exactly:
 
 I could not find that information in the knowledge base.
 
@@ -107,7 +113,7 @@ QUESTION:
         )
 
         if (
-            "I could not find that information"
+            "I could not find that information in the knowledge base."
             in answer
         ):
 
@@ -129,5 +135,6 @@ QUESTION:
     except Exception as e:
 
         return {
-            "error": str(e)
+            "error": str(e),
+            "confidence": "LOW"
         }
